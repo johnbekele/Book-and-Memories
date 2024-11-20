@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import dotenv from "dotenv";
+import axios from "axios";
 
 dotenv.config();
 
@@ -70,8 +71,28 @@ const db = new pg.Client({
 });
 db.connect();
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  const results = await axios.get("https://covers.openlibrary.org");
+
+  console.log(results);
   res.render("pages/home");
+});
+
+app.get("/login", (req, res) => {
+  res.render("pages/auth/login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("pages/auth/register");
+});
+
+app.get("/books/add", (req, res) => {
+  res.render("pages/books/add-book");
+});
+
+app.post("/books/add", (req, res) => {
+  console.log(req.body);
+  res.send("Book added successfully");
 });
 
 app.listen(port, () => {
