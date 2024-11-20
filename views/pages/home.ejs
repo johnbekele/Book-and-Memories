@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookMemories | Share Your Reading Journey</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <h1>BookMemories</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search for books or reviews..." />
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </div>
+      <div class="nav-auth">
+        <a href="/login" class="btn btn-login">Login</a>
+        <a href="/register" class="btn btn-register">Register</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <h2>Share Your Reading Journey</h2>
+        <p>
+          Connect with readers, share your favorite moments, and discover new
+          books
+        </p>
+      </section>
+
+      <section class="recent-reviews">
+        <h3>Recent Book Reviews</h3>
+        <div class="reviews-grid">
+          <% books.forEach(book => { %>
+          <div class="book-review-card">
+            <div class="book-info">
+              <h4><%= book.title %></h4>
+              <p class="author">by <%= book.author %></p>
+            </div>
+            <div class="review-preview">
+              <p><%= book.favoritePoints.substring(0, 150) %>...</p>
+            </div>
+            <div class="card-footer">
+              <span class="reader">Posted by <%= book.user.username %></span>
+              <a href="/books/<%= book._id %>" class="read-more">Read More</a>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
