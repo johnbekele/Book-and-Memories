@@ -16,8 +16,15 @@
         <button type="submit"><i class="fas fa-search"></i>Search</button>
       </div>
       <div class="nav-auth">
+        <% if (username) { %>
+        <div class="user-info">
+          <!-- <img src="/uploads/pf.jpg" alt="Profile Photo" class="user-photo" /> -->
+          <span class="username"><%= username %></span>
+        </div>
+        <% } else { %>
         <a href="/login" class="btn btn-login">Login</a>
         <a href="/register" class="btn btn-register">Register</a>
+        <% } %>
       </div>
     </nav>
 
@@ -29,7 +36,9 @@
           books
         </p>
         <div class="hero-buttons">
-          <a href="/books/add" class="btn btn-primary">Share Your Book</a>
+          <a href="/protected/books/add" class="btn btn-primary"
+            >Share Your Book</a
+          >
           <a href="/books" class="btn btn-secondary">Explore Reviews</a>
         </div>
       </section>
@@ -40,15 +49,15 @@
           <% books.forEach(book => { %>
           <div class="book-review-card">
             <div class="book-info">
-              <h4><%= book.title %></h4>
-              <p class="author">by <%= book.author %></p>
+              <h4><%= book.book_title %></h4>
+              <p class="author">by <%= book.book_author %></p>
             </div>
             <div class="review-preview">
-              <p><%= book.favoritePoints.substring(0, 150) %>...</p>
+              <p><%= book.book_rating %>...</p>
             </div>
             <div class="card-footer">
-              <span class="reader">Posted by <%= book.user.username %></span>
-              <a href="/books/<%= book._id %>" class="read-more">Read More</a>
+              <span class="reader">Posted by <%= book.username %></span>
+              <a href="/books/23" class="read-more">Read More</a>
             </div>
           </div>
           <% }) %>

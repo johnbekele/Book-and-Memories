@@ -19,12 +19,16 @@
     <main class="auth-container">
       <div class="auth-card">
         <h2>Welcome Back!</h2>
+        <% if (message) { %>
+        <p class="auth-subtitle warning"><%= message %></p>
+        <% } else { %>
         <p class="auth-subtitle">Continue your reading journey</p>
+        <%}%>
 
         <form class="auth-form" action="/login" method="POST">
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+            <input type="email" id="email" name="username" required />
           </div>
 
           <div class="form-group">

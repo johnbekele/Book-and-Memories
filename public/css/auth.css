@@ -120,6 +120,10 @@
   margin-top: 0.25rem;
 }
 
+.warning {
+  color: #e74c3c;
+}
+
 /* Success messages styling */
 .success-message {
   color: #27ae60;

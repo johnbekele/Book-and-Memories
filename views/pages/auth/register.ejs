@@ -19,7 +19,11 @@
     <main class="auth-container">
       <div class="auth-card">
         <h2>Create Account</h2>
+        <% if (message) { %>
+        <p class="auth-subtitle"><%= message %></p>
+        <% } else { %>
         <p class="auth-subtitle">Start your reading journey today</p>
+        <% } %>
 
         <form class="auth-form" action="/register" method="POST">
           <div class="form-group">
