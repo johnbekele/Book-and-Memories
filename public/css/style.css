@@ -172,3 +172,77 @@ body {
 .footer a:hover {
   text-decoration: underline;
 }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.user-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.user-photo:hover {
+  transform: scale(1.1);
+}
+
+.username {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Dropdown styles */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background-color: white;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.user-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.username-container {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.user-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-dropdown .username {
+  order: 3;
+}

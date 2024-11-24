@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import session from "express-session";
 import passport from "passport";
 import { Strategy } from "passport-local";
+import GoogleStrategy from "passport-google-oauth2";
 
 dotenv.config();
 
@@ -38,8 +39,8 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "books",
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 });
 db.connect();
 
@@ -58,7 +59,10 @@ async function getbooks() {
 
 //middleware to check user Authentication
 function AuthUser(req, res, next) {
-  if (req.isAuthenticated()) {
+  if (
+    req.isAuthenticated() &&
+    (req.user.strategy === "local" || req.user.strategy === "google")
+  ) {
     return next();
   } else {
     res.redirect("/login");
@@ -71,12 +75,15 @@ app.use("/protected", AuthUser);
 
 app.get("/", async (req, res) => {
   const books = await getbooks();
+  const userphoto = req.user ? req.user.picture : null;
+
   res.render("pages/home", {
     books: books,
-    username: req.user ? req.user.username : null,
+    user: req.user,
   });
 });
 
+// AUth local route
 app.get("/login", (req, res) => {
   res.render("pages/auth/login", { message: null });
 });
@@ -136,8 +143,35 @@ app.post("/register", async (req, res) => {
   }
 });
 
+//Auth google route
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
+
+app.get(
+  "/auth/google/protected/books/add",
+  passport.authenticate("google", {
+    successRedirect: "/protected/books/add",
+    failureRedirect: "/login",
+  })
+);
+
+//log out
+
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) console.log(err);
+    res.redirect("/");
+  });
+});
+
+//bookStore routes
 app.get("/protected/books/add", (req, res) => {
-  console.log(req.user);
+  console.log(req.newuser);
   res.render("pages/books/add-book");
 });
 
@@ -183,32 +217,84 @@ app.post("/protected/books/add", async (req, res) => {
   }
 });
 
+//Auth Strategy for local
+
 passport.use(
+  "local",
   new Strategy(async function (username, password, cb) {
-    const query = "SELECT * FROM users WHERE email = $1";
-    console.log(username);
     try {
-      const result = await db.query(query, [username]);
+      const result = await db.query("SELECT * FROM users WHERE email = $1", [
+        username,
+      ]);
 
       if (result.rows.length > 0) {
-        const hashPasswor = result.rows[0].password;
         const user = result.rows[0];
+        const hashPassword = user.password;
 
-        console.log(user);
-        // compaire bycypt
-        const isMatch = await bcrypt.compare(password, hashPasswor);
+        const isMatch = await bcrypt.compare(password, hashPassword);
 
         if (isMatch) {
+          user.strategy = "local"; // Assign strategy
           return cb(null, user);
         } else {
-          return cb("invalid password,false");
+          return cb(null, false, { message: "Invalid password" });
         }
+      } else {
+        return cb(null, false, { message: "User not found" });
       }
     } catch (err) {
       console.error(err);
-      return cb("user can't be found please re enter ");
+      return cb(err);
     }
   })
+);
+
+//Auth strategies for Google
+
+passport.use(
+  "google",
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/google/protected/books/add",
+      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+    },
+    async (accessToken, refreshToken, profile, cb) => {
+      try {
+        const result = await db.query("SELECT * FROM users WHERE email=$1", [
+          profile.email,
+        ]);
+
+        let user;
+        if (result.rows.length > 0) {
+          // Existing user found
+          user = result.rows[0];
+          user.strategy = "google";
+          user.picture = profile.photos[0]?.value || null;
+        } else {
+          // Create new user
+          const newuser = await db.query(
+            "INSERT INTO users (username, email, password, terms) VALUES ($1, $2, $3, $4) RETURNING *",
+            [profile.given_name, profile.email, "google", "GT"]
+          );
+
+          if (newuser.rows.length > 0) {
+            user = newuser.rows[0];
+            user.strategy = "google";
+            user.picture = profile.photos[0]?.value || null;
+          } else {
+            return cb(null, false, { message: "User creation failed" });
+          }
+        }
+
+        return cb(null, user);
+      } catch (err) {
+        console.error(err);
+        return cb(err);
+      }
+    }
+  )
 );
 
 passport.serializeUser((user, cb) => {
