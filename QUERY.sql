@@ -12,3 +12,9 @@ CREATE TABLE fav_list (
     book_id INTEGER,
     user_id INTEGER REFERENCES users(id)
 );
+
+
+SELECT * FROM users WHERE email=$1 
+
+INSERT INTO users (username ,email,password ,terms)
+VALUES ($1 ,$2,$3)
