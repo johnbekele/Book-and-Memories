@@ -11,8 +11,9 @@ import GoogleStrategy from "passport-google-oauth2";
 
 dotenv.config();
 
-const port = process.env.PORT || 3000;
-const API_KEY = process.env.API_KEY;
+const port = process.env.PORT || 8080;
+const GOOGLE_API = process.env.GOOGLE_API;
+const URL = "https://www.googleapis.com/books/v1";
 const saltRounds = 10;
 const app = express();
 
@@ -74,6 +75,12 @@ function AuthUser(req, res, next) {
 app.use("/protected", AuthUser);
 
 app.get("/", async (req, res) => {
+  const bookName = "rich dad poor dad";
+  // const response = await axios.get(
+  //   `https://www.googleapis.com/books/v1/volumes?q=${bookName}&key=${GOOGLE_API}`
+  // );
+  // const results = response.data;
+  // console.log(results.imageLinks.smallThumbnail);
   const books = await getbooks();
   const userphoto = req.user ? req.user.picture : null;
 
@@ -81,6 +88,36 @@ app.get("/", async (req, res) => {
     books: books,
     user: req.user,
   });
+});
+
+//search books route
+// Search books route
+app.get("/search", async (req, res) => {
+  const query = req.query.q; // Get search query from request
+  if (!query) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Query is required" });
+  }
+
+  try {
+    // Perform a case-insensitive search for books by title or author
+    const searchQuery = `
+      SELECT book_title, book_author, book_comment, book_rating 
+      FROM fav_list 
+      WHERE LOWER(book_title) LIKE $1 OR LOWER(book_author) LIKE $1
+    `;
+    const results = await db.query(searchQuery, [`%${query.toLowerCase()}%`]);
+
+    if (results.rowCount > 0) {
+      res.status(200).json({ success: true, data: results.rows });
+    } else {
+      res.status(404).json({ success: false, message: "No books found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 });
 
 // AUth local route
