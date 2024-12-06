@@ -14,7 +14,7 @@ dotenv.config();
 // const BASE_URL =
 //   "https://generativeai.googleapis.com/v1beta3/models/gemini-1.5-flash:generateText";
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
-const API_key = process.env.API_key;
+
 const port = process.env.PORT || 8080;
 const GOOGLE_API = process.env.GOOGLE_API;
 const URL = "https://www.googleapis.com/books/v1";
@@ -26,7 +26,7 @@ const gemini_API = process.env.GOOGLE_GEMINI_API;
 // const genAI = new GoogleGenerativeAI(gemini_API);
 // const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const genAI = new GoogleGenerativeAI(API_key);
+const genAI = new GoogleGenerativeAI(gemini_API);
 
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -333,9 +333,9 @@ app.post("/ai", async (req, res) => {
     const aiResponse = result.response.text();
     const cleanedResponse = aiResponse.replace(/```json|```|\n/g, "").trim();
     //const parsValue = JSON.parse(aiResponse);
-    cleanedResponse.forEach((item) => {
-      console.log(item.comment);
-    });
+    const parseValue = JSON.parse(cleanedResponse);
+    const message = parseValue.map((item) => `Message:${item.comment}`);
+    console.log(message);
 
     res.render("pages/ai/test", { message: result.response.text() });
   } catch (error) {
