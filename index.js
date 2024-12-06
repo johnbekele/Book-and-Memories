@@ -16,7 +16,6 @@ dotenv.config();
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const port = process.env.PORT || 8080;
-const GOOGLE_API = process.env.GOOGLE_API;
 const URL = "https://www.googleapis.com/books/v1";
 const saltRounds = 10;
 const app = express();
