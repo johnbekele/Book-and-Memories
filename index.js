@@ -8,6 +8,7 @@ import session from "express-session";
 import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
@@ -16,7 +17,13 @@ const GOOGLE_API = process.env.GOOGLE_API;
 const URL = "https://www.googleapis.com/books/v1";
 const saltRounds = 10;
 const app = express();
+const gemini_API = process.env.GOOGLE_GEMINI_API;
 
+// AI model declaration
+const genAI = new GoogleGenerativeAI(gemini_API);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+//middleware configuration
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -76,12 +83,14 @@ app.use("/protected", AuthUser);
 
 app.get("/", async (req, res) => {
   const bookName = "rich dad poor dad";
+
   // const response = await axios.get(
   //   `https://www.googleapis.com/books/v1/volumes?q=${bookName}&key=${GOOGLE_API}`
   // );
   // const results = response.data;
   // console.log(results.imageLinks.smallThumbnail);
   const books = await getbooks();
+
   const userphoto = req.user ? req.user.picture : null;
 
   res.render("pages/home", {
@@ -254,11 +263,43 @@ app.post("/protected/books/add", async (req, res) => {
   }
 });
 
-//Auth Strategy for local
+//Ai integration
 
+app.get("/ai", async (req, res) => {
+  const data = await getbooks();
+  const formatedData = data
+    .map(
+      (book) => `
+ id:${book.id} ,
+ name:${book.bookTitle},
+ author:${book.bookAuthor},
+ comment:${book.book_comment},
+ rating:${book.book_rating} `
+    )
+    .join("\n");
+  const prompt = `Analyze the following data:\n${formatedData}\n\n and give the best fiction book with good rating  `;
+
+  // AI api integration tests
+  try {
+    const result = await model.generateContent(prompt);
+
+    const AIresponse = result.response.candidates[0].output;
+
+    console.log(AIresponse);
+    res.status(200).json({ success: true, message: AIresponse });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error generating AI response" });
+  }
+});
+
+//Auth Strategy for local
 passport.use(
   "local",
   new Strategy(async function (username, password, cb) {
+    console.log(username);
     try {
       const result = await db.query("SELECT * FROM users WHERE email = $1", [
         username,
@@ -287,7 +328,6 @@ passport.use(
 );
 
 //Auth strategies for Google
-
 passport.use(
   "google",
   new GoogleStrategy(
@@ -337,7 +377,6 @@ passport.use(
 passport.serializeUser((user, cb) => {
   cb(null, user);
 });
-
 passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
