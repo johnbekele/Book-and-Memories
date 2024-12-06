@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resolution Generator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      input {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 300px;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #response {
+        width : 50%;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        color: #212529;
+        font-size: 16px;
+      }`
+    </style>
+  </head>
+  <body>
+    <form action="/ai" method="post">
+      <label for="inputText">Enter your question:</label><br />
+      <input type="text" id="inputText" name="question" required />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="response"><%= message %></div>
+  </body>
+</html>
