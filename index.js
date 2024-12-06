@@ -14,7 +14,7 @@ dotenv.config();
 // const BASE_URL =
 //   "https://generativeai.googleapis.com/v1beta3/models/gemini-1.5-flash:generateText";
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
-const API_key = "AIzaSyByTXGB2hWKn0SYSwNKdJHNW5ybbQ3yLBU";
+const API_key = process.env.API_key;
 const port = process.env.PORT || 8080;
 const GOOGLE_API = process.env.GOOGLE_API;
 const URL = "https://www.googleapis.com/books/v1";
