@@ -122,12 +122,12 @@ const login = async (req, res) => {
     // Send final response with access token
     return res.status(200).json({
       message: 'Login successful',
-      user: {
-        id: userExists.id,
-        username: userExists.username,
-        email: userExists.email,
-        role: userExists.role,
-      },
+      // user: {
+      //   id: userExists.id,
+      //   username: userExists.username,
+      //   email: userExists.email,
+      //   role: userExists.role,
+      // },
       accessToken,
     });
   } catch (error) {

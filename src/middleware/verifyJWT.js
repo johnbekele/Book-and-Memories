@@ -11,17 +11,30 @@ const verifyJWT = (req, res, next) => {
       .status(401)
       .json({ error: 'Missing or invalid token', authHeader });
   }
-  // Get token from header and dlete the space from Bearer token
+
   const token = authHeader.split(' ')[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      console.error('JWT Verification failed:', err.message);
-      return res.status(403).json({ error: 'Forbidden' });
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    // Check if decoded contains the expected user data
+    if (!decoded || !decoded.id) {
+      console.error('Invalid token payload:', decoded);
+      return res.status(403).json({ error: 'Invalid token structure' });
     }
-    req.user = decoded.user;
+
+    // Set the user object directly from decoded data
+    req.user = {
+      id: decoded.id,
+      username: decoded.username,
+    };
+
+    console.log('Verified user:', req.user); // Debug log
     next();
-  });
+  } catch (err) {
+    console.error('JWT Verification failed:', err.message);
+    return res.status(403).json({ error: 'Invalid or expired token' });
+  }
 };
 
 export default verifyJWT;
