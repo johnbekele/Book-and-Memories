@@ -5,10 +5,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import bcrypt from "bcrypt";
 import session from "express-session";
-import passport from "passport";
-import { Strategy } from "passport-local";
-import GoogleStrategy from "passport-google-oauth2";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 
 dotenv.config();
 // const BASE_URL =
@@ -16,18 +13,10 @@ dotenv.config();
 // const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const port = process.env.PORT || 8080;
-const URL = "https://www.googleapis.com/books/v1";
-const saltRounds = 10;
 const app = express();
-const gemini_API = process.env.GOOGLE_GEMINI_API;
 
-// AI model declaration
-// const genAI = new GoogleGenerativeAI(gemini_API);
-// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const genAI = new GoogleGenerativeAI(gemini_API);
 
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 //middleware configuration
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -301,135 +290,9 @@ app.get("/ai", async (req, res) => {
   }
 });
 
-// AI testing
 
-app.get("/gpt", (req, res) => {
-  res.render("pages/ai/test", { message: "ai message" });
-});
 
-app.post("/ai", async (req, res) => {
-  const data = await getbooks();
-  const formatedData = data
-    .map(
-      (book) => `
- id:${book.id} ,
- name:${book.bookTitle},
- author:${book.bookAuthor},
- comment:${book.book_comment},
- rating:${book.book_rating} `
-    )
-    .join("\n");
 
-  const question = req.body.question;
-  console.log(question);
-  const prompt = `Analyze the following data:\n${formatedData}\n\n and give me ${question} without  any explanation just the content information and put each data with diffrent id in difrent number and object in array`;
-  console.log(prompt);
-  try {
-    // Call the AI model
-    const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-
-    const aiResponse = result.response.text();
-    const cleanedResponse = aiResponse.replace(/```json|```|\n/g, "").trim();
-    //const parsValue = JSON.parse(aiResponse);
-    const parseValue = JSON.parse(cleanedResponse);
-    const message = parseValue.map((item) => `Message:${item.comment}`);
-    console.log(message);
-
-    res.render("pages/ai/test", { message: result.response.text() });
-  } catch (error) {
-    console.error("Error generating AI response:", error.message);
-    res.render("test", {
-      message: "An error occurred while generating AI response.",
-    });
-  }
-});
-
-//Auth Strategy for local
-passport.use(
-  "local",
-  new Strategy(async function (username, password, cb) {
-    console.log(username);
-    try {
-      const result = await db.query("SELECT * FROM users WHERE email = $1", [
-        username,
-      ]);
-
-      if (result.rows.length > 0) {
-        const user = result.rows[0];
-        const hashPassword = user.password;
-
-        const isMatch = await bcrypt.compare(password, hashPassword);
-
-        if (isMatch) {
-          user.strategy = "local"; // Assign strategy
-          return cb(null, user);
-        } else {
-          return cb(null, false, { message: "Invalid password" });
-        }
-      } else {
-        return cb(null, false, { message: "User not found" });
-      }
-    } catch (err) {
-      console.error(err);
-      return cb(err);
-    }
-  })
-);
-
-//Auth strategies for Google
-passport.use(
-  "google",
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/protected/books/add",
-      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
-    },
-    async (accessToken, refreshToken, profile, cb) => {
-      try {
-        const result = await db.query("SELECT * FROM users WHERE email=$1", [
-          profile.email,
-        ]);
-
-        let user;
-        if (result.rows.length > 0) {
-          // Existing user found
-          user = result.rows[0];
-          user.strategy = "google";
-          user.picture = profile.photos[0]?.value || null;
-        } else {
-          // Create new user
-          const newuser = await db.query(
-            "INSERT INTO users (username, email, password, terms) VALUES ($1, $2, $3, $4) RETURNING *",
-            [profile.given_name, profile.email, "google", "GT"]
-          );
-
-          if (newuser.rows.length > 0) {
-            user = newuser.rows[0];
-            user.strategy = "google";
-            user.picture = profile.photos[0]?.value || null;
-          } else {
-            return cb(null, false, { message: "User creation failed" });
-          }
-        }
-
-        return cb(null, user);
-      } catch (err) {
-        console.error(err);
-        return cb(err);
-      }
-    }
-  )
-);
-
-passport.serializeUser((user, cb) => {
-  cb(null, user);
-});
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
-});
 
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
