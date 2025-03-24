@@ -28,14 +28,14 @@ const postComment = async (req, res) => {
 
     const comment = {
       user: userId,
-      text: commentText, // Changed 'type' to 'text'
+      text: commentText,
       created_at: new Date(),
     };
 
     post.comment.push(comment);
     await post.save();
 
-    return res.status(201).json({ message: 'Comment added' }); // ✅ Correct usage
+    return res.status(201).json({ message: 'Comment added' });
   } catch (error) {
     console.error(error);
     return res
