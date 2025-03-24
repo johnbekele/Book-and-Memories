@@ -12,7 +12,8 @@ const saltround = 10;
 
 app.use(bodyParser.json());
 
-//I don't know why the fuck i create this controll will get back to it
+//I don't know why the fuck i create this controll will get back to it// I think i created this t
+// o check when trying to register to check for the usernamr and email if alredy used or not fucking awfull
 // const checkUserExists = async (req, res) => {
 //   const { username, email } = req.query;
 

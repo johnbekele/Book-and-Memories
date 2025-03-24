@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema(
       Admin: Number,
       Moderator: Number,
     },
+    flaggedComments: {
+      amount: {
+        type: Number,
+        default: 0,
+      },
+    },
     refreshToken: {
       type: String,
       maxlength: 512,

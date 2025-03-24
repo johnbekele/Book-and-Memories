@@ -42,4 +42,4 @@ const isModerator = async (req, res, next) => {
   }
 };
 
-export default { isAdmin, isModerator };
+export { isAdmin, isModerator };
