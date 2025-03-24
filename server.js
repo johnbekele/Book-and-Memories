@@ -5,6 +5,7 @@ import connectDB from './src/config/dbConfig.js';
 import dotenv from 'dotenv';
 import Auth from './src/routes/Auth.js';
 import Book from './src/routes/api/Book.js';
+import Post from './src/routes/api/Post.js';
 
 dotenv.config();
 
@@ -17,8 +18,9 @@ const port = process.env.PORT || 3000;
 // Routes
 app.use('/auth', Auth);
 app.use('/api/book', Book);
+app.use('/api/post', Post);
 
 app.listen(port, () => {
   connectDB();
-  console.log(`http://localhost:${port}/`);
+  console.log(`http://localhost:${port}`);
 });

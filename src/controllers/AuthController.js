@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import User from '../model/User.js';
+import User from '../model/userSchema.js';
 
 dotenv.config();
 
@@ -25,6 +25,15 @@ app.use(bodyParser.json());
 //     res.status(500).json({ message: 'Error checking for user' });
 //   }
 // };
+
+const users = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (e) {
+    res.status(500).json({ message: 'Error getting users' });
+  }
+};
 
 const createUser = async (req, res) => {
   try {
@@ -67,6 +76,8 @@ const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
+    console.log(req.body);
+
     // Check if the user exists
     const userExists = await User.findOne({
       $or: [{ email: identifier }, { username: identifier }],
@@ -92,7 +103,7 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const payload = {
-      id: userExists.id, // Changed from _id to id since you're using Sequelize
+      id: userExists.id,
       username: userExists.username,
       email: userExists.email,
       role: userExists.role,
@@ -145,4 +156,32 @@ const logout = async (req, res) => {
   res.json({ message: 'Logout successful' });
 };
 
-export default { createUser, login, logout };
+const escalateUser = async (req, res) => {
+  const { torole } = req.body;
+  const { id } = req.params;
+  console.log(id);
+
+  if (!['admin', 'moderator'].includes(torole.toLowerCase())) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' });
+    }
+    if (torole.toLowerCase() === 'admin') {
+      user.role.Admin = Number(3001); // Cast to number
+    } else if (torole.toLowerCase() === 'moderator') {
+      user.role.Moderator = Number(4001); // Cast to number
+    } else {
+      return res.status(400).json({ message: 'Invalid role' });
+    }
+    await user.save();
+    res.status(200).json({ message: 'User role updated successfully', user });
+  } catch (e) {
+    res.status(500).json({ message: 'Error updating', e });
+  }
+};
+
+export default { users, createUser, login, logout, escalateUser };

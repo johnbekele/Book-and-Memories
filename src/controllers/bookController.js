@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import Book from '../model/Books.js';
+import Book from '../model/bookSchema.js';
+import Post from '../model/postSchema.js';
 import dotenv from 'dotenv';
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(bodyParser.json());
 
 dotenv.config();
 
+// Get all books
 const getBook = async (req, res) => {
   try {
     const result = await Book.find();
@@ -23,11 +25,12 @@ const getBook = async (req, res) => {
   }
 };
 
+//Search for a book by author or title
 const searchBook = async (req, res) => {
   const { identifier } = req.body;
   try {
     const result = await Book.find({
-      $or: [{ book_author: identifier }, { book_titel: identifier }],
+      $or: [{ book_author: identifier }, { book_title: identifier }],
     });
     if (result) {
       res.status(200).json(result);
@@ -40,10 +43,12 @@ const searchBook = async (req, res) => {
   }
 };
 
+//Create a new book
 const createBook = async (req, res) => {
   const {
     title,
     author,
+    description,
     startDate,
     endDate,
     category,
@@ -55,25 +60,36 @@ const createBook = async (req, res) => {
   const userid = req.user.id;
   console.log(req.user);
   try {
-    const result = await Book.create({
-      book_title: title,
-      book_author: author,
+    const book = await Book.findOne({ book_title: title });
+    if (!book) {
+      book = await Book.create({
+        book_title: title,
+        book_author: author,
+        description: description,
+        category: category,
+        pages: pages,
+      });
+    }
+    const post = await Post.create({
+      user: userid,
+      book: book.id,
+      memories: memories,
       start_date: startDate,
       end_date: endDate,
-      book_category: category,
-      book_comment: comment,
-      book_memories: memories,
-      book_rating: rating,
-      user_id: userid,
-      pages: pages,
+      rating: rating,
+      comment: comment,
     });
-    res.status(201).json(result);
+
+    res.status(201).json({ message: 'Book create Succesfully ', book, post });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+//Comment on Book
+
+//delete book using id
 const deleteBook = async (req, res) => {
   // Added async
   const { id } = req.params;
@@ -92,6 +108,7 @@ const deleteBook = async (req, res) => {
   }
 };
 
+//update book using id
 const updateBook = async (req, res) => {
   const { id } = req.params;
   const { title, author, category, pages } = req.body;
