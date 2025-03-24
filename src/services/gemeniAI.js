@@ -1,6 +1,10 @@
+import express from "express";
+import bodyParser from "body-parser";
 import GoogleStrategy from "passport-google-oauth2";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import dotenv from 
+import dotenv from dotenv;
+
+const router = express.Router();
 
 
 
@@ -22,7 +26,7 @@ const genAI = new GoogleGenerativeAI(gemini_API);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 
-app.post("/ai", async (req, res) => {
+router.post("/ai", async (req, res) => {
   const data = await getbooks();
   const formatedData = data
     .map(
@@ -59,3 +63,6 @@ app.post("/ai", async (req, res) => {
     });
   }
 });
+
+
+export default router;

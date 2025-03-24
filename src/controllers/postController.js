@@ -44,4 +44,6 @@ const postComment = async (req, res) => {
   }
 };
 
+const deleteComment = async (req, res) => {};
+
 export default { postComment };

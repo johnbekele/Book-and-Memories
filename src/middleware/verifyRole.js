@@ -13,12 +13,9 @@ const isAdmin = async (req, res, next) => {
       next();
       req.Admin = user.role.Admin;
     } else {
-      return res
-        .status(403)
-        .json({
-          message:
-            'Access Denied you need Admin access to access this resource',
-        });
+      return res.status(403).json({
+        message: 'Access Denied you need Admin access to access this resource',
+      });
     }
   } catch (error) {
     return res.status(500).json({ message: 'Server error' });
@@ -35,12 +32,10 @@ const isModerator = async (req, res, next) => {
       next();
       req.Moderator = user.role.Moderator;
     } else {
-      return res
-        .status(403)
-        .json({
-          message:
-            'Access Denied you need Moderator access to access this resource',
-        });
+      return res.status(403).json({
+        message:
+          'Access Denied you need Moderator access to access this resource',
+      });
     }
   } catch (error) {
     return res.status(500).json({ message: 'Server error' });
