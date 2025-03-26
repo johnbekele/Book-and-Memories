@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = process.env.PORT || 3000;
 
 // Routes
-app.use('/auth', Auth);
+app.use('/api/auth', Auth);
 app.use('/api/book', Book);
 app.use('/api/post', Post);
 

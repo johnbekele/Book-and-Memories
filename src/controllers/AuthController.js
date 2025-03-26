@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import User from '../model/userSchema.js';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -26,6 +27,15 @@ app.use(bodyParser.json());
 //     res.status(500).json({ message: 'Error checking for user' });
 //   }
 // };
+
+const getMe = async (req, res) => {
+  try {
+    console.log(req.user);
+    res.status(200).json(req.user);
+  } catch (err) {
+    res.status(500).json({ message: 'error getting user ' });
+  }
+};
 
 const users = async (req, res) => {
   try {
@@ -108,6 +118,10 @@ const login = async (req, res) => {
       username: userExists.username,
       email: userExists.email,
       role: userExists.role,
+      firstname: userExists.firstname,
+      lastname: userExists.lastname,
+      phone: userExists.phone,
+      address: userExists.address,
     };
 
     // Generate JWT tokens
@@ -185,4 +199,73 @@ const escalateUser = async (req, res) => {
   }
 };
 
-export default { users, createUser, login, logout, escalateUser };
+//Google Login Strategy
+
+const googleAuth = passport.authenticate('google', {
+  scope: ['profile', 'email'],
+});
+
+const googleCallback = (req, res, next) => {
+  passport.authenticate('google', { session: false }, async (err, user) => {
+    if (err) {
+      console.error('Google auth error:', err);
+      return res.redirect('/login?error=google_auth_failed');
+    }
+
+    if (!user) {
+      return res.redirect('/login?error=no_user');
+    }
+
+    try {
+      // Generate tokens just like in your login method
+      const payload = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        photo: user.photo,
+      };
+
+      const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '15m',
+      });
+
+      const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: '7d',
+      });
+
+      // Update user with refresh token
+      user.refreshToken = refreshToken;
+      await user.save();
+
+      // Set refresh token as HTTP-only cookie
+      res.cookie('jwt', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      });
+
+      // Redirect to frontend with access token
+      // You can adjust this based on your frontend setup
+      res.redirect(`/auth-success?token=${accessToken}`);
+    } catch (error) {
+      console.error('Error during Google auth callback:', error);
+      res.redirect('/login?error=server_error');
+    }
+  })(req, res, next);
+};
+
+// Export the new methods
+export default {
+  getMe,
+  users,
+  createUser,
+  login,
+  logout,
+  escalateUser,
+  googleAuth,
+  googleCallback,
+};

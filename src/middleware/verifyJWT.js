@@ -27,6 +27,12 @@ const verifyJWT = (req, res, next) => {
     req.user = {
       id: decoded.id,
       username: decoded.username,
+      email: decoded.email,
+      role: decoded.role,
+      fistname: decoded.fistname,
+      lastname: decoded.lastname,
+      phone: decoded.phone,
+      address: decoded.address,
     };
 
     console.log('Verified user:', req.user); // Debug log
