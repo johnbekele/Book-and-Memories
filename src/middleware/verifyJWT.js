@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const verifyJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res
@@ -29,7 +29,7 @@ const verifyJWT = (req, res, next) => {
       username: decoded.username,
       email: decoded.email,
       role: decoded.role,
-      fistname: decoded.fistname,
+      fistname: decoded.firstname,
       lastname: decoded.lastname,
       phone: decoded.phone,
       address: decoded.address,

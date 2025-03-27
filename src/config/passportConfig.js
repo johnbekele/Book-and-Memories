@@ -27,7 +27,7 @@ const configurePassport = () => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: '/auth/google/callback',
+        callbackURL: '/api/auth/google/callback',
         userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
         scope: ['profile', 'email'],
       },
@@ -41,6 +41,7 @@ const configurePassport = () => {
             if (!user.googleId) {
               user.googleId = profile.id;
               await user.save();
+              console.log('Updated Google ID for user:', user);
             }
             return done(null, user);
           }

@@ -1,5 +1,3 @@
-import express from 'express';
-import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
@@ -8,10 +6,7 @@ import passport from 'passport';
 
 dotenv.config();
 
-const app = express();
 const saltround = 10;
-
-app.use(bodyParser.json());
 
 //I don't know why the fuck i create this controll will get back to it// I think i created this t
 // o check when trying to register to check for the usernamr and email if alredy used or not fucking awfull
@@ -89,6 +84,14 @@ const login = async (req, res) => {
 
     console.log(req.body);
 
+    // Validate reqbody
+
+    if (!identifier || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Missing identifier or password' });
+    }
+
     // Check if the user exists
     const userExists = await User.findOne({
       $or: [{ email: identifier }, { username: identifier }],
@@ -126,7 +129,7 @@ const login = async (req, res) => {
 
     // Generate JWT tokens
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: '15m',
+      expiresIn: '1d',
     });
 
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
@@ -146,15 +149,16 @@ const login = async (req, res) => {
     });
 
     // Send final response with access token
+    console.log('Access Token:', accessToken);
     return res.status(200).json({
       message: 'Login successful',
-      // user: {
-      //   id: userExists.id,
-      //   username: userExists.username,
-      //   email: userExists.email,
-      //   role: userExists.role,
-      // },
-      accessToken,
+      user: {
+        id: userExists.id,
+        username: userExists.username,
+        email: userExists.email,
+        role: userExists.role,
+      },
+      token: accessToken,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -217,7 +221,7 @@ const googleCallback = (req, res, next) => {
     }
 
     try {
-      // Generate tokens just like in your login method
+      //Payload for JWT tokens
       const payload = {
         id: user.id,
         username: user.username,
@@ -248,8 +252,7 @@ const googleCallback = (req, res, next) => {
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       });
 
-      // Redirect to frontend with access token
-      // You can adjust this based on your frontend setup
+      //Will Adjuste this after Frontend
       res.redirect(`/auth-success?token=${accessToken}`);
     } catch (error) {
       console.error('Error during Google auth callback:', error);

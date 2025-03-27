@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       User: {
@@ -72,6 +72,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       maxlength: 512,
       required: false,
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+    },
+    photo: {
+      type: String,
     },
   },
   {
