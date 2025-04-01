@@ -73,7 +73,7 @@ http
     console.log(`HTTP redirect server running on port ${port}`);
   });
 
-// HTTPS server
+// HTTPS server reqest
 try {
   const httpsOptions = {
     cert: fs.readFileSync(
