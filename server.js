@@ -19,9 +19,8 @@ dotenv.config();
 // Environment configuration
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
-const httpsPort = process.env.HTTPS_PORT || 443;
-const certPath =
-  process.env.CERT_PATH || '/etc/letsencrypt/live/bookapis.zapto.org';
+const httpsPort = process.env.HTTPS_PORT || 8443;
+const certPath = process.env.CERT_PATH || './certs'; // Updated path to local directory
 
 // Initialize Express app
 const app = express();
@@ -29,19 +28,9 @@ const app = express();
 // Apply CORS middleware with proper configuration
 app.use(
   cors({
-<<<<<<< HEAD
-<<<<<<< HEAD
-    origin: ['http://127.0.0.1:5173',
-            'http://localhost:5173'
-         ],
-=======
-    origin: ['http://127.0.0.1:5173', 'https://bookapis.zapto.org'],
->>>>>>> 0573a919dabad0988ab3910a388e63c51ae8064d
-=======
     origin: isDevelopment
       ? 'http://127.0.0.1:5173'
       : ['https://bookapis.zapto.org', 'http://127.0.0.1:5173'],
->>>>>>> 54983d80a68c19920d873621f21c9498207f4485
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -142,10 +131,10 @@ if (!isDevelopment) {
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP & HTTPS servers');
-
+  
   httpServer.close(() => {
     console.log('HTTP server closed');
-
+    
     if (httpsServer) {
       httpsServer.close(() => {
         console.log('HTTPS server closed');
@@ -159,10 +148,10 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('SIGINT signal received: closing HTTP & HTTPS servers');
-
+  
   httpServer.close(() => {
     console.log('HTTP server closed');
-
+    
     if (httpsServer) {
       httpsServer.close(() => {
         console.log('HTTPS server closed');
