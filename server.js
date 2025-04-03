@@ -12,6 +12,7 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import logger from './utils/logger.js';
 
 // Load environment variables
 dotenv.config();
@@ -131,10 +132,10 @@ if (!isDevelopment) {
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP & HTTPS servers');
-  
+
   httpServer.close(() => {
     console.log('HTTP server closed');
-    
+
     if (httpsServer) {
       httpsServer.close(() => {
         console.log('HTTPS server closed');
@@ -148,10 +149,10 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('SIGINT signal received: closing HTTP & HTTPS servers');
-  
+
   httpServer.close(() => {
     console.log('HTTP server closed');
-    
+
     if (httpsServer) {
       httpsServer.close(() => {
         console.log('HTTPS server closed');

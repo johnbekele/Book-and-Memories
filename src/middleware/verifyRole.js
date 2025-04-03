@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import logger from '../../utils/logger.js';
 
 const isAdmin = async (req, res, next) => {
   const user = req.user.role;

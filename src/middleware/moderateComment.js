@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import Flaged from '../model/FlagedSchema.js';
+import logger from '../../utils/logger.js';
 dotenv.config();
 
 const gemini_API = process.env.GOOGLE_GEMINI_API;
@@ -31,7 +32,7 @@ const moderateComment = async (req, res, next) => {
       .trim()
       .split(',');
     const flagged = textresponse.includes('Flagged');
-    console.log(textresponse);
+    logger.log(textresponse);
     if (flagged) {
       // save the flagged comment to the database
       try {
@@ -41,13 +42,13 @@ const moderateComment = async (req, res, next) => {
           reason: textresponse[2],
           comment: commentText,
         });
-        console.log(storeFlaggedComment);
+        logger.log(storeFlaggedComment);
         return res.status(200).json({
           message:
             'Comment flagged will not be posted for public .Please wait for moderatore response',
         });
       } catch (error) {
-        console.error(error);
+        logger.error(error);
         return res
           .status(500)
           .json({ success: false, message: 'error sedding flaged Comment ' });
@@ -57,7 +58,7 @@ const moderateComment = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res
       .status(500)
       .json({ success: false, message: 'Error generating AI response' });

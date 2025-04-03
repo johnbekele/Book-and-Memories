@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../model/userSchema.js';
 import dotenv from 'dotenv';
-
+import logger from '../../utils/logger.js';
 dotenv.config();
 
 const configurePassport = () => {
@@ -41,7 +41,7 @@ const configurePassport = () => {
             if (!user.googleId) {
               user.googleId = profile.id;
               await user.save();
-              console.log('Updated Google ID for user:', user);
+              logger.log('Updated Google ID for user:', user);
             }
             return done(null, user);
           }
@@ -58,7 +58,7 @@ const configurePassport = () => {
 
           return done(null, newUser);
         } catch (err) {
-          console.error('Google auth error:', err);
+          logger.error('Google auth error:', err);
           return done(err, null);
         }
       }

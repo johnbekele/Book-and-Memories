@@ -5,6 +5,7 @@ import Post from '../model/postSchema.js';
 import User from '../model/userSchema.js';
 import dotenv from 'dotenv';
 import Flaged from '../model/FlagedSchema.js';
+import logger from '../../utils/logger.js';
 
 const app = express();
 
@@ -38,7 +39,7 @@ const postComment = async (req, res) => {
 
     return res.status(201).json({ message: 'Comment added' });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: 'Server error', error: error.message });
@@ -74,7 +75,7 @@ const deleteComment = async (req, res) => {
       .status(200)
       .json({ message: 'Comment deleted', data: deleteComment });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res
       .status(500)
       .json({ message: 'Server error', error: error.message });

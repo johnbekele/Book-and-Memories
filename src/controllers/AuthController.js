@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import User from '../model/userSchema.js';
 import passport from 'passport';
+import logger from '../../utils/logger.js';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ const frontendURL =
 
 const getMe = async (req, res) => {
   try {
-    console.log(req.user);
+    logger.log(req.user);
     res.status(200).json(req.user);
   } catch (err) {
     res.status(500).json({ message: 'error getting user ' });
@@ -50,7 +51,7 @@ const createUser = async (req, res) => {
   try {
     const { username, firstname, lastname, email, phone, address, password } =
       req.body;
-    console.log(req.body);
+    logger.log(req.body);
 
     // Check if the user already exists
     const userExists = await User.findOne({
@@ -75,10 +76,10 @@ const createUser = async (req, res) => {
       password: hashedPassword, // Use the awaited hashed password
     });
 
-    console.log('User created ', user.toJSON());
+    logger.log('User created ', user.toJSON());
     res.status(201).json({ message: 'User created successfully', user });
   } catch (e) {
-    console.log('Error creating user ', e);
+    logger.log('Error creating user ', e);
     res.status(500).json({ message: 'Error creating user' });
   }
 };
@@ -87,7 +88,7 @@ const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
-    console.log(req.body);
+    logger.log(req.body);
 
     // Validate reqbody
 
@@ -114,7 +115,7 @@ const login = async (req, res) => {
 
     // Check for JWT secrets
     if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-      console.error('❌ Missing JWT secrets in environment variables!');
+      logger.error('❌ Missing JWT secrets in environment variables!');
       return res
         .status(500)
         .json({ message: 'Server misconfiguration: Missing JWT secrets' });
@@ -154,7 +155,7 @@ const login = async (req, res) => {
     });
 
     // Send final response with access token
-    console.log('Access Token:', accessToken);
+    logger.log('Access Token:', accessToken);
     return res.status(200).json({
       message: 'Login successful',
       user: {
@@ -166,7 +167,7 @@ const login = async (req, res) => {
       token: accessToken,
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error:', error);
     return res.status(500).json({ message: 'Server error during login' });
   }
 };
@@ -183,7 +184,7 @@ const logout = async (req, res) => {
 const escalateUser = async (req, res) => {
   const { torole } = req.body;
   const { id } = req.params;
-  console.log(id);
+  logger.log(id);
 
   if (!['admin', 'moderator'].includes(torole.toLowerCase())) {
     return res.status(400).json({ message: 'Invalid role' });
@@ -217,7 +218,7 @@ const googleAuth = passport.authenticate('google', {
 const googleCallback = (req, res, next) => {
   passport.authenticate('google', { session: false }, async (err, user) => {
     if (err) {
-      console.error('Google auth error:', err);
+      logger.error('Google auth error:', err);
       return res.redirect('/login?error=google_auth_failed');
     }
 
@@ -260,7 +261,7 @@ const googleCallback = (req, res, next) => {
       //Will Adjuste this after Frontend
       res.redirect(`${frontendURL}/auth-success?token=${accessToken}`);
     } catch (error) {
-      console.error('Error during Google auth callback:', error);
+      logger.error('Error during Google auth callback:', error);
       res.redirect('/login?error=server_error');
     }
   })(req, res, next);

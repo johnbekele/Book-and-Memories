@@ -4,6 +4,8 @@ import Book from '../model/bookSchema.js';
 import Post from '../model/postSchema.js';
 import dotenv from 'dotenv';
 
+import logger from '../../utils/logger.js';
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -20,7 +22,7 @@ const getBook = async (req, res) => {
       res.status(404).json({ message: 'No books found' });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -38,7 +40,7 @@ const searchBook = async (req, res) => {
       res.status(404).json({ message: 'No books found' });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -58,7 +60,7 @@ const createBook = async (req, res) => {
     memories,
   } = req.body;
   const userid = req.user.id;
-  console.log(req.user);
+  logger.log(req.user);
   try {
     const book = await Book.findOne({ book_title: title });
     if (!book) {
@@ -82,7 +84,7 @@ const createBook = async (req, res) => {
 
     res.status(201).json({ message: 'Book create Succesfully ', book, post });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -103,7 +105,7 @@ const deleteBook = async (req, res) => {
       res.status(404).json({ message: 'Book not found' });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -128,7 +130,7 @@ const updateBook = async (req, res) => {
       res.status(404).json({ message: 'Book not found' });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
