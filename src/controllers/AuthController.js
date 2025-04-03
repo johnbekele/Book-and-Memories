@@ -195,9 +195,9 @@ const escalateUser = async (req, res) => {
       return res.status(400).json({ message: 'User does not exist' });
     }
     if (torole.toLowerCase() === 'admin') {
-      user.role.Admin = Number(3001); // Cast to number
+      user.role.Admin = Number(4001);
     } else if (torole.toLowerCase() === 'moderator') {
-      user.role.Moderator = Number(4001); // Cast to number
+      user.role.Moderator = Number(3001);
     } else {
       return res.status(400).json({ message: 'Invalid role' });
     }

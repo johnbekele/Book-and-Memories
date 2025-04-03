@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String,
-      maxlength: 512,
+      maxlength: 1500,
       required: false,
     },
     googleId: {
