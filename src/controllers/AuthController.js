@@ -8,6 +8,11 @@ dotenv.config();
 
 const saltround = 10;
 
+const frontendURL =
+  process.env.NODE_ENV === 'production'
+    ? process.env.PROD_FRONTEND_URL
+    : 'http://localhost:5173';
+
 //I don't know why the fuck i create this controll will get back to it// I think i created this t
 // o check when trying to register to check for the usernamr and email if alredy used or not fucking awfull
 // const checkUserExists = async (req, res) => {
@@ -253,7 +258,7 @@ const googleCallback = (req, res, next) => {
       });
 
       //Will Adjuste this after Frontend
-      res.redirect(`/auth-success?token=${accessToken}`);
+      res.redirect(`${frontendURL}/auth-success?token=${accessToken}`);
     } catch (error) {
       console.error('Error during Google auth callback:', error);
       res.redirect('/login?error=server_error');

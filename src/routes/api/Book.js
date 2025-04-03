@@ -11,6 +11,6 @@ router.get('/', bookController.getBook);
 router.post('/search', bookController.searchBook);
 router.post('/add', verifyJWT, bookController.createBook);
 router.delete('/delete/:id', verifyJWT, bookController.deleteBook);
-router.put('/:id', verifyJWT, bookController.updateBook);
+router.put('/update/:id', verifyJWT, bookController.updateBook);
 
 export default router;

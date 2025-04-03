@@ -29,7 +29,7 @@ const app = express();
 app.use(
   cors({
     origin: isDevelopment
-      ? 'http://127.0.0.1:5173'
+      ? ['http://127.0.0.1:5173', 'http://localhost:5173']
       : ['https://bookapis.zapto.org', 'http://127.0.0.1:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -64,7 +64,7 @@ app.use('/api/auth', Auth);
 app.use('/api/book', Book);
 app.use('/api/post', Post);
 
-// Global error handling
+// Global error handlings
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
