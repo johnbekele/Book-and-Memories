@@ -25,6 +25,20 @@ const bookSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
+    cover_image: {
+      type: String,
+    },
+    google_book_id: {
+      type: String,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     collection: 'books',

@@ -6,6 +6,7 @@ import { isAdmin, isModerator } from '../../middleware/verifyRole.js';
 
 const router = express.Router();
 
+router.get('/', postController.getPost);
 router.post(
   '/comment/:postid',
   verifyJWT,

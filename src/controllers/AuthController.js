@@ -69,7 +69,7 @@ const createUser = async (req, res) => {
     const user = await User.create({
       username: username, // This was missing in your original code
       firstname: firstname,
-      lastname: lastname,
+      lastname: lastname || '',
       email: email,
       phone: phone,
       address: address,
@@ -155,7 +155,7 @@ const login = async (req, res) => {
     });
 
     // Send final response with access token
-    logger.log('Access Token:', accessToken);
+    console.log('Access Token:', accessToken);
     return res.status(200).json({
       message: 'Login successful',
       user: {

@@ -12,7 +12,7 @@
   "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "axios": "^1.7.7",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1",
+    "node-cache": "^5.1.2",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",
     "passport-google-oauth2": "^0.2.0",

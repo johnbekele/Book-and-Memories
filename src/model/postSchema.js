@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
-  memories: [
-    {
-      type: String,
-      created_at: { type: Date, default: Date.now },
-    },
-  ],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true },
+  memories: {
+    type: String,
+    required: false,
+  },
   start_date: {
     type: Date,
     required: false,
@@ -19,12 +17,24 @@ const postSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
+    min: 0,
+    max: 5,
   },
   comment: [
     {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-      text: String,
-      created_at: { type: Date, default: Date.now },
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+      },
+      text: {
+        type: String,
+        required: true,
+      },
+      created_at: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
 });

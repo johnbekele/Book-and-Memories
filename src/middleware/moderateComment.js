@@ -6,7 +6,7 @@ import Flaged from '../model/FlagedSchema.js';
 import logger from '../../utils/logger.js';
 dotenv.config();
 
-const gemini_API = process.env.GOOGLE_GEMINI_API;
+const gemini_API = process.env.GOOGLE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(gemini_API);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 

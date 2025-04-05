@@ -37,7 +37,7 @@ const verifyJWT = (req, res, next) => {
       photo: decoded.photo,
     };
 
-    logger.log('Verified user:', req.user); // Debug log
+    logger.log('Verified user:', req.user, token); // Debug log
     next();
   } catch (err) {
     logger.error('JWT Verification failed:', err.message);

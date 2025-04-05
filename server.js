@@ -62,8 +62,8 @@ configurePassport();
 
 // Routes
 app.use('/api/auth', Auth);
-app.use('/api/book', Book);
-app.use('/api/post', Post);
+app.use('/api/books', Book);
+app.use('/api/posts', Post);
 
 // Global error handlings
 app.use((err, req, res, next) => {

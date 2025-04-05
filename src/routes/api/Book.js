@@ -13,4 +13,9 @@ router.post('/add', verifyJWT, bookController.createBook);
 router.delete('/delete/:id', verifyJWT, bookController.deleteBook);
 router.put('/update/:id', verifyJWT, bookController.updateBook);
 
+//Google Book API routes
+
+router.get('/google/search', bookController.searchGoogleBooks);
+router.get('/google/:googleId', bookController.getGoogleBookDetails);
+
 export default router;
