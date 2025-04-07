@@ -20,6 +20,8 @@ router.delete(
 
   postController.deleteComment
 );
-// router.get('/comment/moderate', verifyJWT, moderateComment.moderateComment);
+
+router.post('/:postId/like', verifyJWT, postController.likePost);
+router.post('/:postId/unlike', verifyJWT, postController.unlikePost);
 
 export default router;

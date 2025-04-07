@@ -27,7 +27,6 @@ const getPost = async (req, res) => {
   }
 };
 
-// In your controller
 const postComment = async (req, res) => {
   const { commentText } = req.body;
   const userId = req.user.id;
@@ -93,6 +92,85 @@ const postComment = async (req, res) => {
   }
 };
 
+export const likePost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.user.id; // Assuming req.user is set by auth middleware
+    console.log('userId', userId);
+    console.log('postId', postId);
+    // Validate post ID
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Invalid post ID' });
+    }
+
+    // Find the post
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if user already liked the post
+    if (post.likes.includes(userId)) {
+      return res.status(400).json({ message: 'Post already liked' });
+    }
+
+    // Add user to likes array
+    await Post.findByIdAndUpdate(
+      postId,
+      { $push: { likes: userId } },
+      { new: true }
+    );
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: 'Post liked successfully',
+    });
+  } catch (error) {
+    console.error('Like post error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const unlikePost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.user.id;
+
+    // Validate post ID
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Invalid post ID' });
+    }
+
+    // Find the post
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if user hasn't liked the post
+    if (!post.likes.includes(userId)) {
+      return res.status(400).json({ message: 'Post not liked yet' });
+    }
+
+    // Remove user from likes array
+    await Post.findByIdAndUpdate(
+      postId,
+      { $pull: { likes: userId } },
+      { new: true }
+    );
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: 'Post unliked successfully',
+    });
+  } catch (error) {
+    console.error('Unlike post error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
   const userId = req.user.id;
@@ -129,4 +207,4 @@ const deleteComment = async (req, res) => {
   }
 };
 
-export default { getPost, postComment, deleteComment };
+export default { getPost, postComment, deleteComment, likePost, unlikePost };
