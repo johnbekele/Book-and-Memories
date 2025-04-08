@@ -20,7 +20,9 @@ const moderateComment = async (req, res, next) => {
   const userId = req.user.id;
   const formatedData = { user: userId, text: commentText };
   const formattedString = `User ID: ${formatedData.user}\nComment: "${formatedData.text}"`;
-  const prompt = `Analyze the following data:\n${formattedString}\n\n flag if the comment is inappropriate give only this data the say Flagged first if flagged or not flag if not  then user id and the reason for the flagging .Separate them using a comma.`;
+  const prompt = `Analyze the following data:\n${formattedString}\n\n flag if the comment is inappropriate and also inclue wors or simboles like this 
+
+a55”, “@$$”, “$h1t”, “b!tch”, “bi+ch”, “c0ck”, “f*ck”, “l3itch”, “p*ssy” and “dik” f**k  analyse pattern and  give only this data the say Flagged first if flagged or not flag if not  then user id and the reason for the flagging .Separate them using a comma.`;
 
   // AI api integration tests
   try {
@@ -42,10 +44,9 @@ const moderateComment = async (req, res, next) => {
           reason: textresponse[2],
           comment: commentText,
         });
-        logger.log(storeFlaggedComment);
+
         return res.status(200).json({
-          message:
-            'Comment flagged will not be posted for public .Please wait for moderatore response',
+          moderation: textresponse,
         });
       } catch (error) {
         logger.error(error);
