@@ -4,15 +4,14 @@ import dotenv from 'dotenv';
 import logger from '../../utils/logger.js';
 
 const isAdmin = async (req, res, next) => {
-  const user = req.user.role;
+  const user = req.user;
 
   if (!user) {
     return res.status(403).json({ message: 'Access Denied' });
   }
   try {
-    if (user.role.Admin >= 3001) {
+    if (user.role.Admin >= 4001) {
       next();
-      req.Admin = user.role.Admin;
     } else {
       return res.status(403).json({
         message: 'Access Denied you need Admin access to access this resource',
@@ -24,14 +23,15 @@ const isAdmin = async (req, res, next) => {
 };
 
 const isModerator = async (req, res, next) => {
-  const user = req.user.role;
+  logger.info('isModerator check initiated');
+  const user = req.user;
   if (!user) {
     return res.status(403).json({ message: 'Access Denied' });
   }
   try {
-    if (user.role.Moderator >= 4001) {
+    if (user.role.Moderator >= 3001 || user.role.Admin >= 4001) {
+      logger.info('isModerator check passed');
       next();
-      req.Moderator = user.role.Moderator;
     } else {
       return res.status(403).json({
         message:
