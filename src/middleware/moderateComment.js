@@ -45,6 +45,14 @@ a55”, “@$$”, “$h1t”, “b!tch”, “bi+ch”, “c0ck”, “f*ck”,
           comment: commentText,
         });
 
+        if(!storeFlaggedComment){
+         res.status(500).json({success:false ,message:'faild to save flaged comment'});
+        }
+
+     //register flag to user Account
+
+    const user = await User.findByIdAndUpdate(userId, { flaggedComments.amount: 1 }, { new: true });
+
         return res.status(200).json({
           moderation: textresponse,
         });

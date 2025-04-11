@@ -15,7 +15,7 @@ router.post(
   postController.postComment
 );
 router.delete(
-  '/comment/:commentId',
+  '/mycomment/:commentId',
   verifyJWT,
 
   postController.deleteComment
