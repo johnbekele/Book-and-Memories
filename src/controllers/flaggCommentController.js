@@ -1,5 +1,6 @@
 import express from 'express';
 import Flaged from '../model/FlagedSchema.js';
+import User from '../model/userSchema.js';
 
 const getFlagedComment = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ const getFlagedComment = async (req, res) => {
   }
 };
 
-const deleteComment = async (req, res) => {
+const deleteFlaggeComment = async (req, res) => {
   const { commentId } = req.params;
   const userId = req.user.id;
   try {
@@ -49,4 +50,4 @@ const deleteComment = async (req, res) => {
   }
 };
 
-export default { getFlagedComment, deleteComment };
+export default { getFlagedComment, deleteFlaggeComment };

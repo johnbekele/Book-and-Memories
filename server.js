@@ -23,7 +23,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 const httpsPort = process.env.HTTPS_PORT || 8443;
 const certPath = process.env.CERT_PATH || './certs'; // Updated path to local directory
-
+console.log('certPath', isDevelopment);
 // Initialize Express app
 const app = express();
 
