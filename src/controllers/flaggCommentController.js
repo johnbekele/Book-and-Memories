@@ -24,6 +24,7 @@ const deleteFlaggedComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
     const userId = post.userId;
+    const postid = post.postid;
     const deleteComment = await Flaged.findByIdAndDelete(commentId);
 
     // register flag to user Account
@@ -39,11 +40,32 @@ const deleteFlaggedComment = async (req, res) => {
     }
     user.flaggedComments.amount += 1;
     await user.save();
+
+    // Notify user about the deletion
+    const notification = new Notification({
+      user: userId,
+      type: 'moderator',
+      category: 'flag',
+      title: 'Comment violation has been found',
+      message: `Your comment has deleted by a moderator permanently as it violates the community guidelines`,
+      fromUserId: req.user.id,
+      relatedResource: {
+        type: 'post',
+        id: postid,
+      },
+      createdAt: new Date(),
+    });
+    await notification.save();
+
     res.status(201).json({ message: 'User Flag record updated' });
     // here will add AI training to confirm the finding was correct
     return res
       .status(200)
-      .json({ message: 'Comment deleted', data: deleteComment });
+      .json({
+        message: 'Comment deleted',
+        data: deleteComment,
+        Notification: notification,
+      });
   } catch (error) {
     logger.error(error);
     return res
