@@ -16,7 +16,7 @@ router.get(
 router.delete(
   '/delete/:commentId',
   verifyJWT,
-  isAdmin,
-  flaggCommentController.deleteFlaggeComment
+  isModerator,
+  flaggCommentController.deleteFlaggedComment
 );
 export default router;

@@ -93,7 +93,5 @@ userSchema.statics.associate = function (models) {
   // But typically in Mongoose, you use refs in the schema itself
 };
 
-// Create the model
-const User = mongoose.model('User', userSchema);
-
-export default User;
+// Use singleton pattern to prevent model recompilation
+export default mongoose.models.User || mongoose.model('User', userSchema);

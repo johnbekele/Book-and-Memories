@@ -1,6 +1,6 @@
 import express from 'express';
 import Flaged from '../model/FlagedSchema.js';
-import User from '../model/userSchema.js';
+import User from '../model/UserSchema.js';
 
 const getFlagedComment = async (req, res) => {
   try {
@@ -14,14 +14,15 @@ const getFlagedComment = async (req, res) => {
   }
 };
 
-const deleteFlaggeComment = async (req, res) => {
+const deleteFlaggedComment = async (req, res) => {
   const { commentId } = req.params;
-  const userId = req.user.id;
+
   try {
     const post = await Flaged.findById(commentId);
     if (!post) {
       return res.status(404).json({ message: 'Comment not found' });
     }
+    const userId = post.userId;
     const deleteComment = await Flaged.findByIdAndDelete(commentId);
 
     // register flag to user Account
@@ -50,4 +51,4 @@ const deleteFlaggeComment = async (req, res) => {
   }
 };
 
-export default { getFlagedComment, deleteFlaggeComment };
+export default { getFlagedComment, deleteFlaggedComment };
