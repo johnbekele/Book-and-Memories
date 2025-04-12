@@ -13,6 +13,13 @@ router.get(
   flaggCommentController.getFlagedComment
 );
 
+router.post(
+  '/repost/:commentId',
+  verifyJWT,
+  isModerator,
+  flaggCommentController.moderatorRepost
+);
+
 router.delete(
   '/delete/:commentId',
   verifyJWT,
