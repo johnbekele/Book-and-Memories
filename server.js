@@ -7,6 +7,7 @@ import Auth from './src/routes/Auth.js';
 import Book from './src/routes/api/Book.js';
 import Post from './src/routes/api/Post.js';
 import Flaged from './src/routes/api/FlagedComment.js';
+import Notification from './src/routes/api/Notification.js';
 import passport from 'passport';
 import configurePassport from './src/config/passportConfig.js';
 import http from 'http';
@@ -71,6 +72,7 @@ app.use('/api/auth', Auth);
 app.use('/api/books', Book);
 app.use('/api/posts', Post);
 app.use('/api/posts/flagged', Flaged);
+app.use('/api/notification', Notification);
 
 // Global error handlings
 app.use((err, req, res, next) => {

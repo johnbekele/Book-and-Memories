@@ -3,6 +3,8 @@ import Flaged from '../model/FlagedSchema.js';
 import User from '../model/UserSchema.js';
 import Post from '../model/PostSchema.js';
 import Notification from '../model/notificationsSchema.js';
+import logger from '../../utils/logger.js';
+
 const getFlagedComment = async (req, res) => {
   try {
     const flaggedComment = await Flaged.find();
@@ -23,15 +25,18 @@ const deleteFlaggedComment = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: 'Comment not found' });
     }
+
     const userId = post.userId;
     const postid = post.postid;
     const deleteComment = await Flaged.findByIdAndDelete(commentId);
 
-    // register flag to user Account
+    // Register flag to user account
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Update user's flagged comments
     if (typeof user.flaggedComments !== 'object') {
       user.flaggedComments = { amount: 0 };
     }
@@ -41,13 +46,14 @@ const deleteFlaggedComment = async (req, res) => {
     user.flaggedComments.amount += 1;
     await user.save();
 
-    // Notify user about the deletion
+    // Create notification
     const notification = new Notification({
-      user: userId,
+      userid: userId,
       type: 'moderator',
       category: 'flag',
       title: 'Comment violation has been found',
-      message: `Your comment has deleted by a moderator permanently as it violates the community guidelines`,
+      message:
+        'Your comment has been deleted by a moderator permanently as it violates the community guidelines',
       fromUserId: req.user.id,
       relatedResource: {
         type: 'post',
@@ -57,20 +63,18 @@ const deleteFlaggedComment = async (req, res) => {
     });
     await notification.save();
 
-    res.status(201).json({ message: 'User Flag record updated' });
-    // here will add AI training to confirm the finding was correct
-    return res
-      .status(200)
-      .json({
-        message: 'Comment deleted',
-        data: deleteComment,
-        Notification: notification,
-      });
+    // Send single response with all data
+    return res.status(200).json({
+      message: 'Comment deleted and user flag record updated',
+      data: deleteComment,
+      notification: notification,
+    });
   } catch (error) {
     logger.error(error);
-    return res
-      .status(500)
-      .json({ message: 'Server error', error: error.message });
+    return res.status(500).json({
+      message: 'Server error',
+      error: error.message,
+    });
   }
 };
 
@@ -113,7 +117,7 @@ const moderatorRepost = async (req, res) => {
     //Notify user about the repost
 
     const notification = new Notification({
-      user: userId,
+      userid: userId,
       type: 'moderator',
       category: 'flag',
       title: 'Comment violation not been found',
