@@ -10,25 +10,19 @@ import Flaged from './src/routes/api/FlagedComment.js';
 import Notification from './src/routes/api/Notification.js';
 import passport from 'passport';
 import configurePassport from './src/config/passportConfig.js';
-import http from 'http';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
 import logger from './utils/logger.js';
 
-// Load environment variables
 dotenv.config();
 
-// Environment configuration
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
-const httpsPort = process.env.HTTPS_PORT || 8443;
-const certPath = process.env.CERT_PATH || './certs'; // Updated path to local directory
-console.log('certPath', isDevelopment);
-// Initialize Express app
+
 const app = express();
 
-// Apply CORS middleware with proper configuration
+// Connect to database
+connectDB();
+
+// CORS setup
 app.use(
   cors({
     origin: isDevelopment
@@ -45,7 +39,7 @@ app.use(
   })
 );
 
-// Security headers middleware (only applied in production)
+// Security headers (optional in Render/Railway, since they also add headers)
 if (!isDevelopment) {
   app.use((req, res, next) => {
     res.setHeader(
@@ -59,11 +53,9 @@ if (!isDevelopment) {
   });
 }
 
-// Standard middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Passport middleware
 app.use(passport.initialize());
 configurePassport();
 
@@ -74,101 +66,13 @@ app.use('/api/posts', Post);
 app.use('/api/posts/flagged', Flaged);
 app.use('/api/notification', Notification);
 
-// Global error handlings
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    message: 'Something went wrong!',
-    error: isDevelopment ? err.message : undefined,
-  });
+  res.status(500).json({ message: 'Internal Server Error' });
 });
 
-// HTTP server (for redirecting to HTTPS in production or standalone in development)
-const httpServer = http
-  .createServer(
-    isDevelopment
-      ? app
-      : (req, res) => {
-          res.writeHead(301, {
-            Location: `https://${req.headers.host}${req.url}`,
-          });
-          res.end();
-        }
-  )
-  .listen(port, () => {
-    if (isDevelopment) {
-      connectDB();
-      console.log(`HTTP server running on port ${port}`);
-      console.log(`http://localhost:${port}`);
-    } else {
-      console.log(`HTTP redirect server running on port ${port}`);
-    }
-  });
-
-// HTTPS server (only in production)
-let httpsServer;
-if (!isDevelopment) {
-  try {
-    const httpsOptions = {
-      cert: fs.readFileSync(`${certPath}/fullchain.pem`),
-      key: fs.readFileSync(`${certPath}/privkey.pem`),
-      minVersion: 'TLSv1.2',
-    };
-
-    httpsServer = https
-      .createServer(httpsOptions, app)
-      .listen(httpsPort, () => {
-        connectDB();
-        console.log(`HTTPS server running on port ${httpsPort}`);
-        console.log(`https://bookapis.zapto.org`);
-      });
-  } catch (error) {
-    console.error('Failed to start HTTPS server:', error);
-    console.log('Starting in HTTP-only mode as fallback...');
-
-    // Fallback to HTTP-only if certificates can't be loaded
-    httpServer.close(() => {
-      httpServer = http.createServer(app).listen(port, () => {
-        connectDB();
-        console.log(
-          `HTTP server running on port ${port} (HTTPS fallback mode)`
-        );
-      });
-    });
-  }
-}
-
-// Graceful shutdown handling
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP & HTTPS servers');
-
-  httpServer.close(() => {
-    console.log('HTTP server closed');
-
-    if (httpsServer) {
-      httpsServer.close(() => {
-        console.log('HTTPS server closed');
-        process.exit(0);
-      });
-    } else {
-      process.exit(0);
-    }
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing HTTP & HTTPS servers');
-
-  httpServer.close(() => {
-    console.log('HTTP server closed');
-
-    if (httpsServer) {
-      httpsServer.close(() => {
-        console.log('HTTPS server closed');
-        process.exit(0);
-      });
-    } else {
-      process.exit(0);
-    }
-  });
+// Start server (simple HTTP, HTTPS handled by platform)
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
