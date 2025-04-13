@@ -23,6 +23,10 @@ const FlagedSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    default: 'pending',
+  },
 });
 
 const Flaged = mongoose.model('Flaged', FlagedSchema);

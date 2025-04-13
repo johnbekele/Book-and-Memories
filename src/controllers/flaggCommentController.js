@@ -1,6 +1,6 @@
 import express from 'express';
 import Flaged from '../model/FlagedSchema.js';
-import User from '../model/UserSchema.js';
+import User from '../model/userSchema.js';
 import Post from '../model/PostSchema.js';
 import Notification from '../model/notificationsSchema.js';
 import logger from '../../utils/logger.js';
@@ -120,6 +120,7 @@ const moderatorRepost = async (req, res) => {
       userid: userId,
       type: 'moderator',
       category: 'flag',
+      status: 'false positive',
       title: 'Comment violation not been found',
       message: `Your comment has been approved and posted by a moderator`,
       fromUserId: req.user.id,
