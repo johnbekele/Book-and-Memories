@@ -64,7 +64,7 @@ app.use('/api/auth', Auth);
 app.use('/api/books', Book);
 app.use('/api/posts', Post);
 app.use('/api/posts/flagged', Flaged);
-app.use('/api/notification', Notification);
+app.use('/api/notifications', Notification);
 
 // Global error handler
 app.use((err, req, res, next) => {

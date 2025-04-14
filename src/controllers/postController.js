@@ -141,7 +141,7 @@ const deleteComment = async (req, res) => {
   }
 };
 
-export const likePost = async (req, res) => {
+const likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.user.id; // Assuming req.user is set by auth middleware
@@ -181,7 +181,7 @@ export const likePost = async (req, res) => {
   }
 };
 
-export const unlikePost = async (req, res) => {
+const unlikePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.user.id;

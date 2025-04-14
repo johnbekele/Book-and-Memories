@@ -14,7 +14,7 @@ const getNotifications = async (req, res) => {
 };
 
 const getMyNotifications = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.user.id;
   try {
     const notifications = await Notification.find({ userid: userId });
     if (!notifications) {
