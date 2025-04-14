@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get(
   '/',
-  verifyJWT,
-  isModerator,
+  // verifyJWT,
+  // isModerator,
 
   flaggCommentController.getFlagedComment
 );

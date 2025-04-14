@@ -92,24 +92,47 @@ const postComment = async (req, res) => {
   }
 };
 
+//user can delete their own comment
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
   const userId = req.user.id;
+
   try {
-    const comment = await Post.findOne({
-      'comment._id': commentId,
-      'comment.user': userId,
-    });
-    if (!comment) {
+    // First find the post containing the comment
+    const post = await Post.findOne(
+      { 'comment._id': commentId },
+      { 'comment.$': 1 }
+    );
+
+    // Check if post exists and has comments
+    if (!post || !post.comment || post.comment.length === 0) {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
-    //delete comment
-    const deleteComment = await Post.findByIdAndDelete(commentId);
-    if (!deleteComment)
-      return res.status(404).json({ message: 'Comment not found' });
+    const comment = post.comment[0];
 
-    res.status(200).json({ message: 'Comment deleted' });
+    // Check if user is authorized to delete this comment
+    if (comment.user.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: 'Not authorized to delete this comment' });
+    }
+
+    // Remove the comment using updateOne with $pull
+    const result = await Post.updateOne(
+      { 'comment._id': commentId },
+      { $pull: { comment: { _id: commentId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      return res.status(200).json({
+        message: 'Comment deleted successfully',
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: 'Comment not found or already deleted' });
+    }
   } catch (error) {
     logger.error(error);
     return res

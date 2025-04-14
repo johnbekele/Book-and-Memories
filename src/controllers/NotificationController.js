@@ -43,4 +43,4 @@ const accessNotification = async (req, res) => {
   }
 };
 
-export default { getNotifications };
+export default { getNotifications, accessNotification, getMyNotifications };

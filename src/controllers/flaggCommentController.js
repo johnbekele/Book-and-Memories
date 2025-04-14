@@ -114,6 +114,11 @@ const moderatorRepost = async (req, res) => {
     console.log('comment', comment);
     post.comment.push(comment);
     await post.save();
+
+    const newstatus = 'false positive';
+    flaggedComment.status = newstatus;
+    await flaggedComment.save();
+
     //Notify user about the repost
 
     const notification = new Notification({
