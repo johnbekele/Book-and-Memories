@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import Flaged from '../model/FlagedSchema.js';
 import logger from '../../utils/logger.js';
 import mongoose from 'mongoose';
+import Favorite from '../model/favoritesSchema.js';
 
 const app = express();
 
@@ -217,6 +218,56 @@ const unlikePost = async (req, res) => {
   } catch (error) {
     console.error('Unlike post error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+const favorite = async (req, res) => {
+  const { bookid } = req.params;
+  const userId = req.user.id;
+
+  try {
+    // Validate input
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(bookid)) {
+      return res.status(400).json({ message: 'Invalid book ID' });
+    }
+
+    // Find user and book
+    const [user, book] = await Promise.all([
+      User.findById(userId),
+      Book.findById(bookid),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    // Create and add favorite
+    const favorite = {
+      user: userId,
+      book: bookid,
+      created_at: new Date(),
+    };
+
+    user.favorites.push(favorite);
+    await user.save();
+
+    return res.status(201).json({
+      message: 'Book added to favorites',
+      favorite,
+    });
+  } catch (error) {
+    logger.error(error);
+    return res
+      .status(500)
+      .json({ message: 'Server error', error: error.message });
   }
 };
 

@@ -8,6 +8,7 @@ import Book from './src/routes/api/Book.js';
 import Post from './src/routes/api/Post.js';
 import Flaged from './src/routes/api/FlagedComment.js';
 import Notification from './src/routes/api/Notification.js';
+import Favorites from './src/routes/api/Favorite.js';
 import passport from 'passport';
 import configurePassport from './src/config/passportConfig.js';
 import logger from './utils/logger.js';
@@ -65,6 +66,7 @@ app.use('/api/books', Book);
 app.use('/api/posts', Post);
 app.use('/api/posts/flagged', Flaged);
 app.use('/api/notifications', Notification);
+app.use('/api/favorites', Favorites);
 
 // Global error handler
 app.use((err, req, res, next) => {
