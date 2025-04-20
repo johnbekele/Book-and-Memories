@@ -229,11 +229,11 @@ const googleCallback = (req, res, next) => {
   passport.authenticate('google', { session: false }, async (err, user) => {
     if (err) {
       logger.error('Google auth error:', err);
-      return res.redirect('/login?error=google_auth_failed');
+      return res.redirect(`${frontendURL}/login?error=google_auth_failed`);
     }
 
     if (!user) {
-      return res.redirect('/login?error=no_user');
+      return res.redirect(`${frontendURL}/login?error=no_user`);
     }
 
     const isFreezed = user.freez === true;
@@ -279,7 +279,7 @@ const googleCallback = (req, res, next) => {
       res.redirect(`${frontendURL}/auth-success?token=${accessToken}`);
     } catch (error) {
       logger.error('Error during Google auth callback:', error);
-      res.redirect('/login?error=server_error');
+      res.redirect(`${frontendURL}/login?error=server_error`);
     }
   })(req, res, next);
 };
