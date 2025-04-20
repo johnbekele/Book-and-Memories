@@ -267,6 +267,27 @@ const googleCallback = (req, res, next) => {
   })(req, res, next);
 };
 
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' });
+    }
+
+    const deleteUser = await User.findOneAndDelete({ _id: id });
+
+    return res.status(200).json({
+      message: 'User deleted successfully',
+      user: deleteUser,
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Export the new methods
 export default {
   getMe,
@@ -275,6 +296,7 @@ export default {
   login,
   logout,
   escalateUser,
+  deleteUser,
   googleAuth,
   googleCallback,
 };
