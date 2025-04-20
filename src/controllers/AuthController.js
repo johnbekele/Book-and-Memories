@@ -238,9 +238,7 @@ const googleCallback = (req, res, next) => {
 
     const isFreezed = user.freez === true;
     if (isFreezed) {
-      return res.status(403).json({
-        message: 'Account freezed',
-      });
+      return res.redirect(`${frontendURL}/login?error=account_freezed`);
     }
 
     try {
