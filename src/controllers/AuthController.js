@@ -236,6 +236,13 @@ const googleCallback = (req, res, next) => {
       return res.redirect('/login?error=no_user');
     }
 
+    const isFreezed = user.freez === true;
+    if (isFreezed) {
+      return res.status(403).json({
+        message: 'Account freezed',
+      });
+    }
+
     try {
       //Payload for JWT tokens
       const payload = {
