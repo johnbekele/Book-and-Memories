@@ -54,6 +54,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    freez: {
+      type: Boolean,
+      required: false,
+    },
     role: {
       User: {
         default: 2001,

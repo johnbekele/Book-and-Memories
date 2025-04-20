@@ -110,6 +110,7 @@ const login = async (req, res) => {
     // Compare the hashed password
     const passwordMatch = await bcrypt.compare(password, userExists.password);
     if (!passwordMatch) {
+      console.log("password isn't matching");
       return res.status(400).json({ message: 'Password does not match' });
     }
 
@@ -119,6 +120,15 @@ const login = async (req, res) => {
       return res
         .status(500)
         .json({ message: 'Server misconfiguration: Missing JWT secrets' });
+    }
+
+    // check  if freezed account
+
+    const isFreezed = userExists.freez === true;
+    if (isFreezed) {
+      return res.status(403).json({
+        message: 'Account freezed',
+      });
     }
 
     // Generate JWT token
@@ -288,6 +298,48 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const freezUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' });
+    }
+
+    const freezuser = await User.findByIdAndUpdate(id, { freez: true });
+
+    return res.status(200).json({
+      message: 'User freezed successfully ',
+      user: freezuser,
+    });
+  } catch (error) {
+    console.error('Error freazing user', error);
+    return res.status(500).json({ message: 'server errror ' });
+  }
+};
+
+const unfreezUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' });
+    }
+
+    const freezuser = await User.findByIdAndUpdate(id, { freez: false });
+
+    return res.status(200).json({
+      message: 'User restore access successfully ',
+      user: freezuser,
+    });
+  } catch (error) {
+    console.error('Error restor user', error);
+    return res.status(500).json({ message: 'server errror ' });
+  }
+};
+
 // Export the new methods
 export default {
   getMe,
@@ -297,6 +349,8 @@ export default {
   logout,
   escalateUser,
   deleteUser,
+  freezUser,
+  unfreezUser,
   googleAuth,
   googleCallback,
 };

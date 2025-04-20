@@ -12,7 +12,13 @@ router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.post('/escalate/:id', verifyJWT, isAdmin, authController.escalateUser);
 router.delete('/delete/:id', verifyJWT, isAdmin, authController.deleteUser);
-
+router.put('/freez/access/:id', verifyJWT, isAdmin, authController.freezUser);
+router.put(
+  '/restore/access/:id',
+  verifyJWT,
+  isAdmin,
+  authController.unfreezUser
+);
 // Google OAuth routes
 router.get('/google', authController.googleAuth);
 router.get('/google/callback', authController.googleCallback);
