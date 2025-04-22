@@ -5,6 +5,6 @@ import verifyJWT from '../../middleware/verifyJWT.js';
 const router = express.Router();
 
 router.get('/', verifyJWT, favoritesController.getFavorites);
-router.post('/:postId', verifyJWT, favoritesController.addFavorite);
+router.post('/add/:postId', verifyJWT, favoritesController.addFavorite);
 
 export default router;
