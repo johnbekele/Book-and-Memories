@@ -24,6 +24,32 @@ const getFavorites = async (req, res) => {
   }
 };
 
+const removefavorites = async (req, res) => {
+  const { favId } = req.params;
+  const userId = req.user.id;
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ message: "user doesn't exist " });
+    }
+
+    // update favorites
+    const favexist = await Favorites.findOne({ userId, favId });
+
+    if (!favexist) {
+      res.status(404).json({ message: "favoriutes doesn't exist" });
+    }
+
+    const deleteFav = await Favorites.findOneAndDelete({ _id: favId });
+
+    res.status(202).json('dleted favorite', favexist);
+  } catch (error) {
+    res.status(404).json('error response', error);
+    console.log(error);
+  }
+};
+
 const addFavorite = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -56,4 +82,4 @@ const addFavorite = async (req, res) => {
   }
 };
 
-export default { getFavorites, addFavorite };
+export default { getFavorites, addFavorite, removefavorites };
