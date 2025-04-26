@@ -12,14 +12,20 @@ import Favorites from './src/routes/api/Favorite.js';
 import passport from 'passport';
 import configurePassport from './src/config/passportConfig.js';
 import logger from './utils/logger.js';
-
+import message from './src/routes/api/message.js';
+import { Server } from 'socket.io';
+import http from 'http';
+import configureSocket from './src/config/socket.js';
 dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
 
 const app = express();
+const server = http.createServer(app);
 
+// Initialize Socket.IO with server
+const io = configureSocket(server);
 // Connect to database
 connectDB();
 
@@ -67,6 +73,7 @@ app.use('/api/posts', Post);
 app.use('/api/posts/flagged', Flaged);
 app.use('/api/notifications', Notification);
 app.use('/api/favorites', Favorites);
+app.use('/api/messages', message);
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -75,6 +82,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start server (simple HTTP, HTTPS handled by platform)
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
