@@ -1,5 +1,3 @@
-// models/messageSchema.js
-
 import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
@@ -8,21 +6,18 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   sender: {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  roomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Chat',
+    required: true,
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-  roomId: {
-    type: String, // Optional: if you have multiple chat rooms
   },
 });
 

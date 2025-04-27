@@ -13,6 +13,7 @@ import passport from 'passport';
 import configurePassport from './src/config/passportConfig.js';
 import logger from './utils/logger.js';
 import message from './src/routes/api/message.js';
+import chat from './src/routes/api/Chat.js';
 import { Server } from 'socket.io';
 import http from 'http';
 import configureSocket from './src/config/socket.js';
@@ -74,6 +75,7 @@ app.use('/api/posts/flagged', Flaged);
 app.use('/api/notifications', Notification);
 app.use('/api/favorites', Favorites);
 app.use('/api/messages', message);
+app.use('/api/chat', chat);
 
 // Global error handler
 app.use((err, req, res, next) => {

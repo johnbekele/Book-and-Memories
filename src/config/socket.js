@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import messageController from '../controllers/messageController.js';
 
 const configureSocket = (server) => {
   const io = new Server(server, {
@@ -12,25 +11,27 @@ const configureSocket = (server) => {
   });
   io.on('connection', (socket) => {
     console.log('A user connected');
+  });
 
-    // Send message history when a user connects
-    messageController
-      .getRecentMessages()
-      .then((messages) => socket.emit('message history', messages))
-      .catch((err) => console.error('Error sending message history:', err));
+  // Socket.io connection
+  io.on('connection', (socket) => {
+    console.log('User connected:', socket.id);
 
-    socket.on('disconnect', () => {
-      console.log('User disconnected');
+    // Join a chat room
+    socket.on('joinRoom', (chatId) => {
+      socket.join(chatId);
+      console.log(`User ${socket.id} joined chat ${chatId}`);
     });
 
-    socket.on('chat message', async (msgData) => {
-      try {
-        const savedMessage = await messageController.createMessage(msgData);
-        io.emit('chat message', savedMessage);
-      } catch (error) {
-        console.error('Error handling message:', error);
-        socket.emit('error', 'Failed to save message');
-      }
+    // Listen for new messages
+    socket.on('sendMessage', (data) => {
+      const { chatId, message } = data;
+      // Emit message to all users in the room (except sender)
+      socket.to(chatId).emit('receiveMessage', message);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('User disconnected:', socket.id);
     });
   });
 
