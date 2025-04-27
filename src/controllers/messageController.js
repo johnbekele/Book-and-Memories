@@ -48,6 +48,10 @@ const sendMessage = async (req, res) => {
       'username email avatar'
     );
 
+    //Emitting the new message to room
+    const io = req.app.get('io');
+    io.to(chatId).emit('reciveMessage', populatedMessage);
+
     res.status(201).json(populatedMessage);
   } catch (error) {
     console.error('Error sending message:', error);

@@ -9,29 +9,47 @@ const configureSocket = (server) => {
       allowedHeaders: ['Content-Type', 'Authorization'],
     },
   });
-  io.on('connection', (socket) => {
-    console.log('A user connected');
-  });
 
-  // Socket.io connection
+  // 👇 Track connected users: { userId: socketId }
+  const onlineUsers = new Map();
+
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    // Join a chat room
+    // When user comes online, client must emit 'setup' with their userId
+    socket.on('setup', (userId) => {
+      if (userId) {
+        onlineUsers.set(userId, socket.id);
+        console.log(`User ${userId} is online`);
+
+        // Emit updated list
+        io.emit('onlineUsers', Array.from(onlineUsers.keys()));
+      }
+    });
+
     socket.on('joinRoom', (chatId) => {
       socket.join(chatId);
       console.log(`User ${socket.id} joined chat ${chatId}`);
     });
 
-    // Listen for new messages
-    socket.on('sendMessage', (data) => {
-      const { chatId, message } = data;
-      // Emit message to all users in the room (except sender)
-      socket.to(chatId).emit('receiveMessage', message);
+    socket.on('leaveRoom', (chatId) => {
+      socket.leave(chatId);
+      console.log(`User ${socket.id} left chat ${chatId}`);
     });
 
     socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
+
+      // Find userId and remove from map
+      for (let [userId, id] of onlineUsers.entries()) {
+        if (id === socket.id) {
+          onlineUsers.delete(userId);
+          break;
+        }
+      }
+
+      // Emit updated list
+      io.emit('onlineUsers', Array.from(onlineUsers.keys()));
     });
   });
 
