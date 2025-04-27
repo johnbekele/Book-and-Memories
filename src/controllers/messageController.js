@@ -1,7 +1,7 @@
 // controllers/messageController.js
 import mongoose from 'mongoose';
 import Message from '../model/messageSchema.js';
-import Chat from '../model/ChatSchema.js';
+import Chat from '../model/chatSchema.js';
 
 const sendMessage = async (req, res) => {
   const { chatId, content } = req.body;

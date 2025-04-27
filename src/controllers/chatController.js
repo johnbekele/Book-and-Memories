@@ -1,6 +1,6 @@
-// controllers/chatController.js
-import Chat from '../../src/model/ChatSchema.js';
-import User from '../../src/model/UserSchema.js'; // Assuming you have a User model
+import Chat from '../model/chatSchema.js';
+
+import User from '../model/userSchema.js';
 
 const startChat = async (req, res) => {
   const { receiverId } = req.body;
