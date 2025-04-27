@@ -34,9 +34,6 @@ const startChat = async (req, res) => {
   }
 };
 
-/**
- * Get all chats for the current user
- */
 const getUserChats = async (req, res) => {
   const userId = req.user.id;
 
