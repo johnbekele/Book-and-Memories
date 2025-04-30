@@ -52,7 +52,7 @@ const configurePassport = () => {
           // Create new user with Google data
           const newUser = await User.create({
             googleId: profile.id,
-            username: profile.username || profile.firstname,
+            username: profile.username || profile.name.givenName,
             firstname: profile.name.givenName || '',
             lastname: profile.name.familyName || '',
             email: profile.emails[0].value,
