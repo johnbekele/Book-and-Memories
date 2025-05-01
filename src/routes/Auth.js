@@ -19,6 +19,8 @@ router.put(
   isAdmin,
   authController.unfreezUser
 );
+
+router.post('/profile/:userId', authController.findUserProfile);
 // Google OAuth routes
 router.get('/google', authController.googleAuth);
 router.get('/google/callback', authController.googleCallback);

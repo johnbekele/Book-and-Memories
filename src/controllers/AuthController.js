@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../model/userSchema.js';
 import passport from 'passport';
 import logger from '../../utils/logger.js';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -345,6 +346,27 @@ const unfreezUser = async (req, res) => {
   }
 };
 
+const findUserProfile = async (req, res) => {
+  const { userId } = req.params;
+  console.log(userId);
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const userexists = await User.findOne({ _id: userId });
+
+    if (!userexists) {
+      console.log("user doesn't exist ");
+      res.status(404).json({ message: 'Usernot found ' });
+    }
+    console.log('user', userexists);
+    res.status(200).json(userexists);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
 // Export the new methods
 export default {
   getMe,
@@ -358,4 +380,5 @@ export default {
   unfreezUser,
   googleAuth,
   googleCallback,
+  findUserProfile,
 };
