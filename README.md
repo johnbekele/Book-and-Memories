@@ -18,6 +18,12 @@
 - [Contributing](#contributing)
 - [License](#license)
 
+![Screenshot 2025-05-27 125830](https://github.com/user-attachments/assets/f1a017f3-41a0-48e1-b932-8d959cf559f4)
+
+![Screenshot 2025-05-27 125559](https://github.com/user-attachments/assets/1a1210b6-0064-49e3-8b44-29bbfec2db61)
+![Screenshot 2025-05-27 125942](https://github.com/user-attachments/assets/c3661cd6-1c39-4f26-b93c-fa8b52c53055)
+![Screenshot 2025-05-27 130001](https://github.com/user-attachments/assets/30992dd5-bf4b-43b8-b53e-dcec62b1eb48)
+
 ## Technologies Used
 
 - **PostgreSQL**: Relational database for storing user data and book experiences.
