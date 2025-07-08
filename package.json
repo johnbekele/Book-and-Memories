@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1",
+    "newrelic": "^12.24.0",
     "node-cache": "^5.1.2",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",

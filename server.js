@@ -17,6 +17,7 @@ import chat from './src/routes/api/Chat.js';
 import { Server } from 'socket.io';
 import http from 'http';
 import configureSocket from './src/config/socket.js';
+import 'newrelic';
 dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
