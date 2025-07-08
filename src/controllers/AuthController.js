@@ -134,6 +134,7 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const payload = {
+      method: 'local',
       id: userExists.id,
       username: userExists.username,
       email: userExists.email,
@@ -142,6 +143,7 @@ const login = async (req, res) => {
       lastname: userExists.lastname,
       phone: userExists.phone,
       address: userExists.address,
+      photo: userExists.photo,
     };
 
     // Generate JWT tokens
@@ -170,10 +172,16 @@ const login = async (req, res) => {
     return res.status(200).json({
       message: 'Login successful',
       user: {
+        method: 'local',
         id: userExists.id,
         username: userExists.username,
         email: userExists.email,
         role: userExists.role,
+        firstname: userExists.firstname,
+        lastname: userExists.lastname,
+        phone: userExists.phone,
+        address: userExists.address,
+        photo: userExists.photo,
       },
       token: accessToken,
     });
@@ -245,6 +253,7 @@ const googleCallback = (req, res, next) => {
     try {
       //Payload for JWT tokens
       const payload = {
+        method: 'google',
         id: user.id,
         username: user.username,
         email: user.email,

@@ -26,6 +26,7 @@ const verifyJWT = (req, res, next) => {
 
     // Set the user object directly from decoded data
     req.user = {
+      method: decoded.method,
       id: decoded.id,
       username: decoded.username,
       email: decoded.email,

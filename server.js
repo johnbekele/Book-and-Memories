@@ -14,14 +14,16 @@ import configurePassport from './src/config/passportConfig.js';
 import logger from './utils/logger.js';
 import message from './src/routes/api/message.js';
 import chat from './src/routes/api/Chat.js';
+import Upload from './src/routes/api/Upload.js';
 import { Server } from 'socket.io';
 import http from 'http';
 import configureSocket from './src/config/socket.js';
-import 'newrelic';
 dotenv.config();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -66,6 +68,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.set('io', io);
+app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
 
 configurePassport();
 
@@ -78,6 +81,7 @@ app.use('/api/notifications', Notification);
 app.use('/api/favorites', Favorites);
 app.use('/api/messages', message);
 app.use('/api/chat', chat);
+app.use('/api/upload', Upload);
 
 // Global error handler
 app.use((err, req, res, next) => {
